@@ -7,8 +7,8 @@ main(void){
 		//the code multiplies all values of the array by 10^x so they become integers. 'mult' is the 10^x
 		scanf("%d",&size);
 		if (size==0) exit(1);
-		float *array=(float*)malloc(size*sizeof(float));		//malloc instead of array[size] so i can use free(array) later
-		for(i=0;i<size;i++) scanf("%f",&array[i]);
+		double *array=(double*)malloc(size*sizeof(double));		//malloc instead of array[size] so i can use free(array) later
+		for(i=0;i<size;i++) scanf("%lf",&array[i]);
 		for (i=0;i<size;i++){
 			if (array[i]*mult-int(array[i]*mult)>0) {			//if array[i]*mult still isn't integer...
 				mult*=10;
@@ -19,7 +19,7 @@ main(void){
 			for(i=0;i<size;i++) array[i]*=mult;
 		for(i=0;i<size;i++) if (array[i]>bigger) bigger=array[i];
 		int *aux=(int*)calloc(bigger+1,sizeof(int));
-		for(i=0;i<size;i++) aux[int(array[i])]++;			//despite array no longer having floats, the compiler demanded int(array[i]
+		for(i=0;i<size;i++) aux[int(array[i])]++;			//despite array no longer having double, the compiler demanded int(array[i]
 		
 		j=0;												//to me it was easier this way than with 'for' loop. just a matter taste
 		i=0;
@@ -32,7 +32,7 @@ main(void){
 		}
 		if (mult>1)											//void redundancy
 			for(i=0;i<size;i++) array[i]/=mult;				//values in the now sorted array get back to their values
-		for(i=0;i<size;i++) printf("%3.3f ",array[i]);			//3.3 just to make the printf prettier. can be removed
+		for(i=0;i<size;i++) printf("%3.3lf ",array[i]);			//3.3 just to make the printf prettier. can be removed
 		printf("\n");
 		free(array);
 		free(aux);
