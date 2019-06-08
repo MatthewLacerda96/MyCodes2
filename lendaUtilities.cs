@@ -165,7 +165,7 @@ public class lendaUtilities : MonoBehaviour {
     }
 
     //essa função devia servir pra substituir um elemento X num vetor pro um Y, qndo não se sabe o indice de X
-    //mas eu ainda nao testei então não sei se funciona :D
+    //o vetor pode ser de qualquer tipo de dado
     public static void subst(object antigo, object novo, params object[] vetor) {
         for(int i = 0; i < vetor.Length; i++) {
             if(vetor[i] == antigo) {
