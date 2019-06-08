@@ -5,41 +5,23 @@ using System.Linq;
 
 public class tetherSystem : MonoBehaviour {
 
-    //Este bloco é para debug e não para build
+    //Este bloco é para debug visual e não para build
     public bool debuggar;
     public GameObject visualAccessPoint, visualProbe;
     public Material green, red;
 
     [HideInInspector] public tetherProbe playerDestination = new tetherProbe();
-
-    [HideInInspector] public int shooters {
-        get {
-            int i = 0;
-            foreach(basicS bs in listaDeBots) {
-                if(bs.andando == false) {
-                    i++;
-                }
-            }
-            return i;
-        }
-        set {
-
-        }
-    }
-    public static int numShooters;
-
+    
     tetherProbe[] probes;
 
-    const int numAccesses = 8;                                          //Nande Subarashi Programming
+    const int numAccesses = 8;
     public tetherFlank[] flankProbes = new tetherFlank[numAccesses];
     Vector3[] directions = new Vector3[numAccesses];
-
-    List<basicS> listaDeBots = new List<basicS>();
 
     NavMeshHit auxNavMeshHit;
     Vector3 lastPos, velocity;
 
-    const int rayBudget = 16;
+    const int rayBudget = 16;  //Número de raytraces por frame. 16 é um ótimo balanço entre performance e delay
 
     void Awake() {
         if(this.enabled == false) {
@@ -152,32 +134,9 @@ public class tetherSystem : MonoBehaviour {
             frank.botsDestinated = 0;
         }
 
-        //Atenção: não tente entender essa merda.
         Vector3[] flankPos = new Vector3[flankProbes.Length];
         for(int i = 0; i < flankProbes.Length; i++) {
             flankPos[i] = flankProbes[i].position;
-        }
-        Vector3[] destinations = new Vector3[listaDeBots.Count];
-        int j = 0;
-        foreach(basicS bot in listaDeBots) {
-            Vector3 nearestFkp = lendaUtilities.nearest(bot.transform.position, flankPos);
-            foreach(tetherFlank fkp in flankProbes) {
-                if(fkp.position == nearestFkp) {
-                    fkp.botsAround++;
-                    break;
-                }
-            }
-            destinations[j] = listaDeBots[j].agent.destination;
-            j++;
-        }
-        foreach(Vector3 dest in destinations) {
-            Vector3 fkp = lendaUtilities.nearest(dest, flankPos);
-            foreach(tetherFlank fk in flankProbes) {
-                if(fk.position == fkp) {
-                    fk.botsDestinated++;
-                    break;
-                }
-            }
         }
     }
 
@@ -249,14 +208,6 @@ public class tetherSystem : MonoBehaviour {
         return nearest;
     }
 
-    public void addBot(basicS bot) {
-        listaDeBots.Add(bot);
-    }
-
-    public void removeBot(basicS bot) {     //Provavelmente inutil pq o basicS é destruído quando o bot some
-        listaDeBots.Remove(bot);
-    }
-
     void predictPlayerProbeDestination() {
 
         if(velocity.magnitude == 0) {
@@ -299,44 +250,6 @@ public class tetherSystem : MonoBehaviour {
             if(debuggar) {
                 flankProbes[i].debugger.transform.position = auxNavMeshHit.position;
                 flankProbes[i].debugger.transform.position = flankProbes[i].position;
-            }
-        }
-
-        foreach(basicS bot in listaDeBots) {
-            tetherFlank closestFlank = flankProbes[0];
-            float closestDist = Vector3.Distance(bot.transform.position, closestFlank.position);
-
-            tetherFlank closestDestiny = flankProbes[0];
-            float closestDestinyDist = Vector3.Distance(bot.agent.destination, closestDestiny.position);
-
-            foreach(tetherFlank frank in flankProbes) {
-                float currentDist = Vector3.Distance(frank.position, bot.transform.position);
-                if(currentDist < closestDist) {
-                    closestDist = currentDist;
-                    closestFlank = frank;
-                }
-
-                float currentDest = Vector3.Distance(closestDestiny.position, frank.position);
-                if(currentDest < closestDestinyDist) {
-                    closestDestinyDist = currentDest;
-                    closestDestiny = frank;
-                }
-            }
-
-            closestFlank.botsAround++;
-            closestDestiny.botsDestinated++;
-
-            for(int i = 0; i < flankProbes.Length; i++) {
-                if(closestFlank == flankProbes[i]) {
-                    flankProbes[i] = closestFlank;
-                    break;
-                }
-            }
-            for(int i = 0; i < flankProbes.Length; i++) {
-                if(closestDestiny == flankProbes[i]) {
-                    flankProbes[i] = closestDestiny;
-                    break;
-                }
             }
         }
     }
